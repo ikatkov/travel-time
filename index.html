@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- EXTERNAL LIBS-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="papaparse.js"></script>
+    <script src="https://www.google.com/jsapi"></script>
+
+    <!-- EXAMPLE SCRIPT -->
+    <script>
+
+        // onload callback
+        function drawChart() {
+
+
+            Papa.parse("http://ec2-52-27-140-161.us-west-2.compute.amazonaws.com/travel-time.log.csv", {
+                download: true,
+                complete: function (results) {
+                    setUpData(results);
+                }
+            });
+
+            function setUpData(results) {
+                // loop through results and log temperature to the console
+                var data = new google.visualization.DataTable();
+
+                data.addColumn('datetime', 'Time');
+                data.addColumn('number', 'Home->Work');
+                data.addColumn('number', 'Work->Home');
+                var dataLong = jQuery.extend(true, {}, data);
+                $.each(results.data, function () {
+                    if(this.length > 4) {
+                        var timestamp = new Date(this[0]);
+                        dataLong.addRow([
+                            (timestamp),
+                            parseInt(this[4].split(' ')[0]),
+                            parseInt(this[2].split(' ')[0]),
+                        ]);
+                        if(new Date() - timestamp < 1000*60*60*24){
+                            data.addRow([
+                                (timestamp),
+                                parseInt(this[4].split(' ')[0]),
+                                parseInt(this[2].split(' ')[0]),
+                            ]);
+                        }
+                    }
+                });
+
+                var chart = new google.visualization.LineChart($('#chart').get(0));
+                var chartLong = new google.visualization.LineChart($('#chartLong').get(0));
+
+                chart.draw(data, {
+                    title: 'Commute',
+                    curveType: 'function',
+                    legend: {position: 'bottom'},
+                    vAxes: {
+                        // Adds titles to each axis.
+                        0: {title: 'Commute time, minutes'}
+                    }
+                });
+                chartLong.draw(dataLong, {
+                    title: 'Historical Commute',
+                    curveType: 'function',
+                    legend: {position: 'bottom'},
+                    vAxes: {
+                        // Adds titles to each axis.
+                        0: {title: 'Commute time, minutes'}
+                    },
+                    width: data.getNumberOfRows()*10
+                });
+            }
+
+
+
+
+        }
+
+        // load chart lib
+        google.load('visualization', '1', {
+            packages: ['corechart']
+        });
+
+        // call drawChart once google charts is loaded
+        google.setOnLoadCallback(drawChart);
+    </script>
+
+</head>
+<body>
+<div id="chart" style="width: 100%; height: 700px "></div>
+<div id="chartLong" style="width: 100%; height: 700px; overflow-x: scroll; overflow-y: hidden; "></div>
+<img src="https://intellyx.com/wp-content/uploads/2015/11/automate-all-the-things.jpg">
+
+</body>
+</html>
