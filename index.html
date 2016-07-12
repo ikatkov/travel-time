@@ -13,7 +13,7 @@
         function drawChart() {
 
 
-            Papa.parse("http://ec2-52-27-140-161.us-west-2.compute.amazonaws.com/travel-time.log.csv", {
+            Papa.parse("travel-time.log.csv", {
                 download: true,
                 complete: function (results) {
                     setUpData(results);

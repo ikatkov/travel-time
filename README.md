@@ -38,4 +38,5 @@ Installation
 1. Deploy any webserver
 1. Place index.html somewhere it cab be served
 1. Create `travel-time.personal.sh` and hardcode your addresses and api key. Place it in the same folder with 'travel-time.sh'
+1. Symlink `travel-time.log.csv` to where you put `index.html`
 1. Wait till some data is generated and load the index.html in your browser
